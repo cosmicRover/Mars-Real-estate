@@ -63,4 +63,39 @@ dependencies {
 
     // Core with Ktx
     implementation "androidx.core:core-ktx:$version_core"
+
+    //json to kotlin object converter libraries
+    implementation "com.squareup.moshi:moshi:$version_moshi"
+    implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+
+    // add retrofit libraries + moshi compatible retrofit library
+    implementation "com.squareup.retrofit2:retrofit: $version_retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
+    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit" //should remove it after adding moshi converter
+
+    //co-routine libraries for retrofit
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

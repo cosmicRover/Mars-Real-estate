@@ -20,6 +20,15 @@ package com.example.android.marsrealestate.overview
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.android.marsrealestate.network.MarsApi
+import com.example.android.marsrealestate.network.MarsProperty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
+import javax.security.auth.callback.Callback
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
@@ -33,6 +42,11 @@ class OverviewViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _response
 
+    /**init a co-routine job and scope */
+    private val viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
+
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
@@ -44,6 +58,24 @@ class OverviewViewModel : ViewModel() {
      * Sets the value of the status LiveData to the Mars API status.
      */
     private fun getMarsRealEstateProperties() {
-        _response.value = "Set the Mars API Response here!"
+        /**encapsulating coroutines inside a launch block so that it automatically manages concurrency */
+        coroutineScope.launch {
+            /**calls the mars api singleton and makes a get request and await the results with co-routines*/
+            var getItemsDeferred = MarsApi.retrofitService.getProperties()
+
+            try {
+                var resultsList = getItemsDeferred.await()
+                _response.value = "Success ${resultsList.size} items"
+            }catch (t:Throwable){
+                _response.value = "Error ${t.localizedMessage}"
+            }
+        }
+        _response.value = "Awaiting..."
+    }
+
+    /**cancel job if view model is destroyed */
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }
