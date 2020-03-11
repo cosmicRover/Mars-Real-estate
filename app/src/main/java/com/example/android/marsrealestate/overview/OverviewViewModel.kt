@@ -17,6 +17,7 @@
 
 package com.example.android.marsrealestate.overview
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,9 +27,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
@@ -36,11 +34,15 @@ import javax.security.auth.callback.Callback
 class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData String that stores the status of the most recent request
-    private val _response = MutableLiveData<String>()
+    private val _status = MutableLiveData<String>()
 
     // The external immutable LiveData for the request status String
     val response: LiveData<String>
-        get() = _response
+        get() = _status
+
+    //live data and getter
+    private val _property = MutableLiveData<MarsProperty>()
+    val property: LiveData<MarsProperty> get() = _property
 
     /**init a co-routine job and scope */
     private val viewModelJob = Job()
@@ -65,12 +67,15 @@ class OverviewViewModel : ViewModel() {
 
             try {
                 var resultsList = getItemsDeferred.await()
-                _response.value = "Success ${resultsList.size} items"
+                if(resultsList.isNotEmpty()){
+                    _property.value = resultsList[67] //TODO: debug not getting url error
+                }
+
             }catch (t:Throwable){
-                _response.value = "Error ${t.localizedMessage}"
+                _status.value = "Error ${t.localizedMessage}"
             }
         }
-        _response.value = "Awaiting..."
+        _status.value = "Awaiting..."
     }
 
     /**cancel job if view model is destroyed */
